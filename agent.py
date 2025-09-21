@@ -1,19 +1,21 @@
 from langchain.agents import initialize_agent, Tool
-from langchain.tools import WikipediaQueryRun
-from langchain.utilities import WikipediaAPIWrapper
+from langchain_community.tools import WikipediaQueryRun
+from langchain_community.utilities import WikipediaAPIWrapper
 from langchain.chat_models import ChatOpenAI
 import arxiv
 import os
 
-# Load API key from environment variable
+# Get OpenAI key from env
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
-llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo", openai_api_key=openai_api_key)
+llm = ChatOpenAI(
+    temperature=0,
+    model="gpt-3.5-turbo",
+    openai_api_key=openai_api_key
+)
 
-# Wikipedia tool
 wiki = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
 
-# arXiv tool
 def arxiv_search(query: str) -> str:
     search = arxiv.Search(query=query, max_results=3)
     results = search.results()
@@ -25,11 +27,11 @@ def arxiv_search(query: str) -> str:
 arxiv_tool = Tool(
     name="ArxivSearch",
     func=arxiv_search,
-    description="Use this tool for scientific research queries using arXiv"
+    description="Search arXiv for academic and scientific research."
 )
 
 tools = [
-    Tool(name="Wikipedia", func=wiki.run, description="Use this tool for general knowledge"),
+    Tool(name="Wikipedia", func=wiki.run, description="Search Wikipedia for general knowledge."),
     arxiv_tool
 ]
 
