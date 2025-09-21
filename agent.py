@@ -1,21 +1,46 @@
 import os
-from langchain.agents import initialize_agent, load_tools
-from langchain.llms import HuggingFaceHub
+from huggingface_hub import InferenceClient
+import wikipedia
+import arxiv
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 HF_MODEL = os.getenv("HF_MODEL", "meta-llama/Llama-3.1-8B-Instruct")
 
-llm = HuggingFaceHub(
-    repo_id=HF_MODEL,
-    huggingfacehub_api_token=HF_TOKEN,
-    model_kwargs={"temperature": 0, "max_new_tokens": 500}
-)
+client = InferenceClient(token=HF_TOKEN)
 
-tools = load_tools(["wikipedia", "arxiv"], llm=llm)
+def ask_model(prompt: str) -> str:
+    """
+    Send prompt to Hugging Face model and get response.
+    """
+    response = client.text_generation(model=HF_MODEL, inputs=prompt, max_new_tokens=500)
+    return response[0]["generated_text"]
 
-agent = initialize_agent(
-    tools=tools,
-    llm=llm,
-    agent="zero-shot-react-description",
-    verbose=True
-)
+def wiki_search(query: str) -> str:
+    try:
+        summary = wikipedia.summary(query, sentences=3)
+        return summary
+    except Exception as e:
+        return f"Wikipedia error: {e}"
+
+def arxiv_search(query: str) -> str:
+    try:
+        search = arxiv.Search(
+            query=query,
+            max_results=3,
+            sort_by=arxiv.SortCriterion.Relevance
+        )
+        results = [f"{r.title} ({r.published.date()})\n{r.entry_id}" for r in search.results()]
+        return "\n\n".join(results) if results else "No results found."
+    except Exception as e:
+        return f"arXiv error: {e}"
+
+def agent_run(prompt: str) -> str:
+    """
+    Run agent: tries model first, fallback to Wikipedia + arXiv if needed.
+    """
+    try:
+        return ask_model(prompt)
+    except Exception as e:
+        wiki = wiki_search(prompt)
+        arx = arxiv_search(prompt)
+        return f"Model error: {e}\n\nWikipedia:\n{wiki}\n\narXiv:\n{arx}"
