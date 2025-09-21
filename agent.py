@@ -9,12 +9,11 @@ HF_TOKEN = os.environ.get("HF_TOKEN")
 
 llm = HuggingFaceEndpoint(
     repo_id="HuggingFaceH4/zephyr-7b-beta",
-    task="text-generation",
+    task="conversational",
     huggingfacehub_api_token=HF_TOKEN,
     temperature=0.7,
     max_new_tokens=512
 )
-
 
 wiki = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
 
