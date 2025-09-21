@@ -1,13 +1,13 @@
 import streamlit as st
 from agent import agent
 
-st.title("AI-Powered Search Assistant")
+st.title("AI Search Engine (Hugging Face)")
 
-prompt = st.text_input("Enter your question below — the assistant will use Wikipedia, arXiv, and Hugging Face AI to answer.")
+prompt = st.text_input("Enter your question:")
 
 if prompt:
     try:
         response = agent.run(prompt)
-        st.write("**Answer:**", response)
+        st.write(response)
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"Error running agent: {e}")
