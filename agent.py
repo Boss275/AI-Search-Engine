@@ -8,11 +8,11 @@ from langchain_huggingface import HuggingFaceEndpoint
 HF_TOKEN = os.environ.get("HF_TOKEN")
 
 llm = HuggingFaceEndpoint(
-    repo_id="tiiuae/falcon-7b-instruct",
-    task="text-generation",
+    repo_id="google/flan-t5-base",
+    task="text2text-generation",
     huggingfacehub_api_token=HF_TOKEN,
     temperature=0.7,
-    max_new_tokens=512
+    max_new_tokens=256
 )
 
 wiki = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
@@ -43,5 +43,6 @@ agent = initialize_agent(
     llm=llm,
     agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
     verbose=True,
-    handle_parsing_errors=True
+    handle_parsing_errors=True,
+    return_intermediate_steps=False
 )
