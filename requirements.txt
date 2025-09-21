@@ -1,7 +1,6 @@
 streamlit
 langchain
 langchain-community
-openai
+openai>=1.0.0
 wikipedia
 arxiv
-openai==0.28.1
