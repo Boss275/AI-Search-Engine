@@ -1,12 +1,16 @@
+import os
 from langchain.agents import initialize_agent, Tool
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
-from langchain.chat_models import ChatOpenAI
+from langchain_huggingface import HuggingFaceEndpoint
 import arxiv
 
-llm = ChatOpenAI(
-    temperature=0,
-    model="gpt-3.5-turbo"
+HF_TOKEN = os.environ.get("HF_TOKEN")
+
+llm = HuggingFaceEndpoint(
+    repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
+    huggingfacehub_api_token=HF_TOKEN,
+    temperature=0.7
 )
 
 wiki = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
