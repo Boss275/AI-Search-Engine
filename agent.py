@@ -9,10 +9,7 @@ HF_MODEL = os.getenv("HF_MODEL", "meta-llama/Llama-3.1-8B-Instruct")
 client = InferenceClient(token=HF_TOKEN)
 
 def ask_model(prompt: str) -> str:
-    """
-    Send prompt to Hugging Face model and get response.
-    """
-    response = client.text_generation(HF_MODEL, prompt, max_new_tokens=500)
+    response = client.text_generation(model=HF_MODEL, prompt=prompt, max_new_tokens=500)
     return response[0]["generated_text"]
 
 def wiki_search(query: str) -> str:
@@ -35,6 +32,9 @@ def arxiv_search(query: str) -> str:
         return f"arXiv error: {e}"
 
 def agent_run(prompt: str) -> str:
+    """
+    Run agent: tries model first, fallback to Wikipedia + arXiv if needed.
+    """
     try:
         return ask_model(prompt)
     except Exception as e:
