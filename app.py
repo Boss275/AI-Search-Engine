@@ -2,9 +2,9 @@ import streamlit as st
 from openai import OpenAI
 from agent import agent
 
-OPENAI_API_KEY = "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"
-PROJECT_ID = "org-NDV0ZribUDQj8ChhdJfsKCWa"
-ORG_ID = "proj_sojtXxIXoP4WhEZDzMiMOWVw"
+OPENAI_API_KEY = "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"
+PROJECT_ID = "proj_QHsK4ZJE2mnu6bkcuEGYAGyI"
+ORG_ID = "org-V8sG6TuRjJhPJa6MTlZHURN0"
 client = OpenAI(api_key=OPENAI_API_KEY, project=PROJECT_ID, organization=ORG_ID)
 
 def ask_openai(prompt):
