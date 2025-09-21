@@ -1,22 +1,21 @@
 import os
-from langchain import HuggingFaceHub
 from langchain.agents import initialize_agent, load_tools
+from langchain.llms import HuggingFaceHub
 
-# Get your token from Streamlit secrets
+# Load Hugging Face API token from secrets
 HF_TOKEN = os.getenv("HF_TOKEN")
-HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"  # public and accessible
 
-# LLM setup
+# Initialize the LLM with a public model
 llm = HuggingFaceHub(
-    repo_id=HF_MODEL,
-    huggingfacehub_api_token=HF_TOKEN,
-    model_kwargs={"temperature": 0, "max_new_tokens": 500}
+    repo_id="meta-llama/Llama-3.1-8B-Instruct",
+    model_kwargs={"temperature": 0, "max_new_tokens": 500},
+    huggingfacehub_api_token=HF_TOKEN
 )
 
-# Tools
+# Load tools for the agent
 tools = load_tools(["wikipedia", "arxiv"], llm=llm)
 
-# Agent
+# Initialize the agent
 agent = initialize_agent(
     tools=tools,
     llm=llm,
