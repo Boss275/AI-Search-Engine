@@ -3,17 +3,40 @@ import arxiv
 from langchain.agents import initialize_agent, Tool, AgentType
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
+from langchain.llms.base import LLM
 from langchain_huggingface import HuggingFaceEndpoint
 
 HF_TOKEN = os.environ.get("HF_TOKEN")
 
-llm = HuggingFaceEndpoint(
-    repo_id="google/flan-t5-base",
-    task="text2text-generation",
-    huggingfacehub_api_token=HF_TOKEN,
-    temperature=0.7,
-    max_new_tokens=256
-)
+class HuggingFaceSafeLLM(LLM):
+    def __init__(self, repo_id: str, hf_token: str):
+        self.endpoint = HuggingFaceEndpoint(
+            repo_id=repo_id,
+            task="text2text-generation",
+            huggingfacehub_api_token=hf_token,
+            temperature=0.7,
+            max_new_tokens=256
+        )
+
+    def _call(self, prompt: str, stop=None):
+        try:
+            res = self.endpoint(prompt)
+            if isinstance(res, str):
+                return res.strip()
+            if isinstance(res, list) and len(res) > 0:
+                if "generated_text" in res[0]:
+                    return res[0]["generated_text"].strip()
+                if "output_text" in res[0]:
+                    return res[0]["output_text"].strip()
+            return str(res)
+        except Exception as e:
+            return f"HF Error: {e}"
+
+    @property
+    def _llm_type(self):
+        return "huggingface_safe"
+
+llm = HuggingFaceSafeLLM("google/flan-t5-base", HF_TOKEN)
 
 wiki = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
 
@@ -43,6 +66,5 @@ agent = initialize_agent(
     llm=llm,
     agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
     verbose=True,
-    handle_parsing_errors=True,
-    return_intermediate_steps=False
+    handle_parsing_errors=True
 )
