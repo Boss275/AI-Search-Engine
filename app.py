@@ -1,18 +1,22 @@
 import streamlit as st
 from agent import agent
 
-st.set_page_config(page_title="AI-Powered Search Assistant", layout="centered")
+def ask_hf(prompt):
+    try:
+        response = agent.run(prompt)
+        return response
+    except Exception as e:
+        return f"Error: {e}"
+
+st.set_page_config(page_title="AI-Powered Search Assistant")
 
 st.title("AI-Powered Search Assistant")
-st.write("Enter a question below — the assistant will use Hugging Face AI to answer.")
+st.write("Enter a question below — the assistant will use Wikipedia, arXiv, and Hugging Face AI to answer.")
 
-question = st.text_input("Your question:")
+query = st.text_input("Your question:")
 
-if st.button("Ask"):
-    if question.strip():
-        with st.spinner("Thinking..."):
-            answer = agent(question)
-        st.subheader("Answer")
-        st.write(answer)
-    else:
-        st.warning("Please enter a question before asking.")
+if st.button("Submit") and query:
+    with st.spinner("Thinking..."):
+        response = ask_hf(query)
+        st.markdown("### Answer")
+        st.write(response)
