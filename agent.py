@@ -3,10 +3,8 @@ from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 from langchain.chat_models import ChatOpenAI
 import arxiv
-import os
 
-# Get OpenAI key from env
-openai_api_key = os.getenv("OPENAI_API_KEY")
+openai_api_key = "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"
 
 llm = ChatOpenAI(
     temperature=0,
