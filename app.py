@@ -1,13 +1,13 @@
 import streamlit as st
 import openai
 
-openai.api_key = "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+openai.api_key = "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"
 openai.organization = "org-V8sG6TuRjJhPJa6MTlZHURN0"
 
 def ask_openai(prompt):
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo",e
             messages=[{"role": "user", "content": prompt}],
         )
         return response.choices[0].message.content.strip()
