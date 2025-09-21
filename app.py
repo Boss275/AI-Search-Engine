@@ -2,7 +2,9 @@ import streamlit as st
 from openai import OpenAI
 from agent import agent
 
-client = OpenAI()
+OPENAI_API_KEY = "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"
+
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 def ask_openai(prompt):
     try:
