@@ -1,19 +1,28 @@
 import streamlit as st
-from agent import agent
+import openai
 
-st.set_page_config(page_title="AI Agent Search Engine")
+openai.api_key = "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+openai.organization = "org-V8sG6TuRjJhPJa6MTlZHURN0"
 
-st.title("AI Agent Search Engine")
-st.markdown("Ask a question and let the AI search using Wikipedia and arXiv.")
+def ask_openai(prompt):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Error: {e}"
 
-query = st.text_input("Enter your query:", placeholder="e.g. What is quantum computing?")
+st.set_page_config(page_title="AI-Powered Search Assistant")
 
-if st.button("Search") and query:
-    with st.spinner("Searching..."):
-        try:
-            response = agent.run(query)
-            st.success("Search complete.")
-            st.markdown("### Answer")
-            st.write(response)
-        except Exception as e:
-            st.error(f"Error: {e}")
+st.title("AI-Powered Search Assistant")
+st.write("Enter a question below — the assistant will generate a clear and informative response based on your input.")
+
+query = st.text_input("Your question:")
+
+if st.button("Submit") and query:
+    with st.spinner("Thinking..."):
+        response = ask_openai(query)
+        st.markdown("### Answer")
+        st.write(response)
