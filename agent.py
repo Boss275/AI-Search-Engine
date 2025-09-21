@@ -1,6 +1,6 @@
 import os
-from langchain.llms import HuggingFaceHub
 from langchain.agents import initialize_agent, load_tools
+from langchain.llms import HuggingFaceHub
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 HF_MODEL = os.getenv("HF_MODEL", "meta-llama/Llama-3.1-8B-Instruct")
