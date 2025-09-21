@@ -1,43 +1,25 @@
 import os
-from huggingface_hub import InferenceClient
-import wikipedia
-import arxiv
+from langchain import HuggingFaceHub
+from langchain.agents import initialize_agent, load_tools
 
+# Get your token from Streamlit secrets
 HF_TOKEN = os.getenv("HF_TOKEN")
-HF_MODEL = os.getenv("HF_MODEL", "meta-llama/Llama-3.1-8B-Instruct")
+HF_MODEL = "meta-llama/Llama-3.1-8B-Instruct"  # public and accessible
 
-client = InferenceClient(token=HF_TOKEN)
+# LLM setup
+llm = HuggingFaceHub(
+    repo_id=HF_MODEL,
+    huggingfacehub_api_token=HF_TOKEN,
+    model_kwargs={"temperature": 0, "max_new_tokens": 500}
+)
 
-def ask_model(prompt: str) -> str:
-    response = client.text_generation(model=HF_MODEL, prompt=prompt, max_new_tokens=500)
-    return response[0]["generated_text"]
+# Tools
+tools = load_tools(["wikipedia", "arxiv"], llm=llm)
 
-def wiki_search(query: str) -> str:
-    try:
-        summary = wikipedia.summary(query, sentences=3)
-        return summary
-    except Exception as e:
-        return f"Wikipedia error: {e}"
-
-def arxiv_search(query: str) -> str:
-    try:
-        search = arxiv.Search(
-            query=query,
-            max_results=3,
-            sort_by=arxiv.SortCriterion.Relevance
-        )
-        results = [f"{r.title} ({r.published.date()})\n{r.entry_id}" for r in search.results()]
-        return "\n\n".join(results) if results else "No results found."
-    except Exception as e:
-        return f"arXiv error: {e}"
-
-def agent_run(prompt: str) -> str:
-    """
-    Run agent: tries model first, fallback to Wikipedia + arXiv if needed.
-    """
-    try:
-        return ask_model(prompt)
-    except Exception as e:
-        wiki = wiki_search(prompt)
-        arx = arxiv_search(prompt)
-        return f"Model error: {e}\n\nWikipedia:\n{wiki}\n\narXiv:\n{arx}"
+# Agent
+agent = initialize_agent(
+    tools=tools,
+    llm=llm,
+    agent="zero-shot-react-description",
+    verbose=True
+)
