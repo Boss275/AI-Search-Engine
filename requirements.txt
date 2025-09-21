@@ -1,6 +1,6 @@
 streamlit
 langchain
 langchain-community
-openai>=1.0.0
+langchain-huggingface
 wikipedia
 arxiv
