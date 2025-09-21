@@ -4,7 +4,7 @@ from langchain_community.utilities import WikipediaAPIWrapper
 from langchain.chat_models import ChatOpenAI
 import arxiv
 
-openai_api_key = "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"
+openai_api_key = "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"
 
 llm = ChatOpenAI(
     temperature=0,
