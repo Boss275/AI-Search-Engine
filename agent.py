@@ -3,11 +3,12 @@ from langchain.agents import initialize_agent, Tool
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 from langchain_huggingface import HuggingFaceEndpoint
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
 import arxiv
 
 HF_TOKEN = os.environ.get("HF_TOKEN")
 
-# Use a model that supports "text-generation"
 llm = HuggingFaceEndpoint(
     repo_id="tiiuae/falcon-7b-instruct",
     task="text-generation",
@@ -15,6 +16,12 @@ llm = HuggingFaceEndpoint(
     temperature=0.7,
     max_new_tokens=512
 )
+
+prompt = PromptTemplate(
+    input_variables=["input"],
+    template="{input}"
+)
+llm_chain = LLMChain(llm=llm, prompt=prompt)
 
 wiki = WikipediaQueryRun(api_wrapper=WikipediaAPIWrapper())
 
@@ -39,7 +46,7 @@ tools = [
 
 agent = initialize_agent(
     tools=tools,
-    llm=llm,
+    llm=llm_chain,
     agent="zero-shot-react-description",
     verbose=True
 )
