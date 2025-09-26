@@ -5,7 +5,7 @@ from agent import agent
 # Streamlit app title and input
 # ─────────────────────────────────────────────
 
-st.title("🤖 AI Search Engine (Hugging Face)")
+st.title("🤖 AI Search Engine and Chatbot(Hugging Face)")
 
 prompt = st.text_input("💬 Enter your question:")
 
